@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Soldier Roster - CombatPrep{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
+    <h2 class="fw-bold text-light m-0"><i class="fa-solid fa-users text-accent me-2"></i> Soldier Roster</h2>
+</div>
+
+<div class="card glass-card border-0 shadow">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0 custom-table">
+                <thead class="bg-darker">
+                    <tr>
+                        <th class="px-4 py-3">Name</th>
+                        <th class="py-3">Rank</th>
+                        <th class="py-3">Service No.</th>
+                        <th class="py-3">Unit</th>
+                        <th class="py-3 text-end px-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for soldier in soldiers %}
+                    <tr>
+                        <td class="px-4 align-middle fw-bold">
+                            {{ soldier.get_full_name|default:soldier.username }}
+                        </td>
+                        <td class="align-middle">
+                            <span class="badge bg-secondary">{{ soldier.profile.rank|default:"Undesignated" }}</span>
+                        </td>
+                        <td class="align-middle opacity-75">{{ soldier.profile.service_number|default:"-" }}</td>
+                        <td class="align-middle opacity-75">{{ soldier.profile.unit|default:"-" }}</td>
+                        <td class="align-middle text-end px-4">
+                            <a href="{% url 'soldier_detail' soldier.pk %}" class="btn btn-sm btn-outline-accent">
+                                <i class="fa-solid fa-eye me-1"></i> View Record
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted p-5">
+                            <i class="fa-solid fa-folder-open fa-3x mb-3 opacity-50"></i>
+                            <h5>No personnel records found</h5>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - CombatPrep{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
+    <h2 class="fw-bold text-light m-0"><i class="fa-solid fa-chart-line text-accent me-2"></i> Dashboard</h2>
+    <span class="badge bg-secondary fs-6 py-2 px-3">Role: {{ user.get_role_display }}</span>
+</div>
+
+{% if user.role == 'ADMIN' %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card glass-card text-center h-100 border-0 shadow">
+            <div class="card-body pb-0">
+                <i class="fa-solid fa-users fa-3x text-accent mb-3 mt-2"></i>
+                <h5 class="card-title text-muted text-uppercase fw-bold">Total Users</h5>
+                <h1 class="display-3 fw-bold">{{ total_users }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card glass-card text-center h-100 border-0 shadow">
+            <div class="card-body pb-0">
+                <i class="fa-solid fa-person-rifle fa-3x text-accent mb-3 mt-2"></i>
+                <h5 class="card-title text-muted text-uppercase fw-bold">Soldiers</h5>
+                <h1 class="display-3 fw-bold">{{ total_soldiers }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card glass-card text-center h-100 border-0 shadow">
+            <div class="card-body pb-0">
+                <i class="fa-solid fa-clipboard-check fa-3x text-accent mb-3 mt-2"></i>
+                <h5 class="card-title text-muted text-uppercase fw-bold">Assessments</h5>
+                <h1 class="display-3 fw-bold">{{ total_assessments }}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif user.role == 'OFFICER' %}
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card glass-card h-100 border-0 shadow">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-4 ms-3">
+                    <i class="fa-solid fa-person-rifle fa-4x text-accent"></i>
+                </div>
+                <div>
+                    <h5 class="text-muted text-uppercase fw-bold mb-1">Total Soldiers</h5>
+                    <h1 class="display-4 fw-bold m-0">{{ total_soldiers }}</h1>
+                </div>
+                <div class="ms-auto me-3">
+                    <a href="{% url 'soldier_list' %}" class="btn btn-outline-accent">View All Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card glass-card h-100 border-0 shadow">
+            <div class="card-header bg-transparent border-bottom border-secondary">
+                <h5 class="fw-bold mb-0 mt-2"><i class="fa-solid fa-clock-rotate-left me-2"></i>Recent Assessments</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush bg-transparent">
+                    {% for assessment in recent_assessments %}
+                    <li class="list-group-item bg-transparent border-secondary text-light d-flex justify-content-between align-items-center px-4 py-3">
+                        <div>
+                            <strong>{{ assessment.soldier.get_full_name|default:assessment.soldier.username }}</strong>
+                            <div class="small text-muted">{{ assessment.date_recorded|date:"M d, Y" }}</div>
+                        </div>
+                        <span class="badge fw-bold badge-score {% if assessment.readiness_score >= 80 %}bg-success{% elif assessment.readiness_score >= 60 %}bg-warning{% else %}bg-danger{% endif %} text-light">
+                            Score: {{ assessment.readiness_score }}
+                        </span>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item bg-transparent border-0 text-muted p-4 text-center">No assessments recorded yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif user.role == 'SOLDIER' %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card glass-card h-100 border-0 shadow profile-card">
+            <div class="card-header bg-transparent border-bottom border-secondary text-center py-4">
+                <div class="profile-icon mx-auto mb-3">
+                    <i class="fa-solid fa-user fa-2x"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h4>
+                <p class="text-accent fw-bold mb-0">{{ profile.rank|default:"No Rank Assigned" }}</p>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-3 d-flex justify-content-between border-bottom border-secondary pb-2">
+                        <span class="text-muted"><i class="fa-solid fa-id-card me-2"></i>Service No.</span>
+                        <span class="fw-bold">{{ profile.service_number|default:"N/A" }}</span>
+                    </li>
+                    <li class="mb-3 d-flex justify-content-between border-bottom border-secondary pb-2">
+                        <span class="text-muted"><i class="fa-solid fa-sitemap me-2"></i>Unit</span>
+                        <span class="fw-bold">{{ profile.unit|default:"N/A" }}</span>
+                    </li>
+                    <li class="mb-3 d-flex justify-content-between border-bottom border-secondary pb-2">
+                        <span class="text-muted"><i class="fa-solid fa-calendar me-2"></i>Enlisted</span>
+                        <span class="fw-bold">{{ profile.enlistment_date|date:"N Y"|default:"N/A" }}</span>
+                    </li>
+                </ul>
+                <div class="mt-4 text-center">
+                    <a href="{% url 'update_profile' %}" class="btn btn-outline-accent w-100">Update Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card glass-card h-100 border-0 shadow">
+            <div class="card-header bg-transparent border-bottom border-secondary p-4">
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-clipboard-list me-2"></i>Assessment History</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0 custom-table">
+                        <thead>
+                            <tr>
+                                <th class="px-4">Date</th>
+                                <th>Officer</th>
+                                <th>Physical</th>
+                                <th>Technical</th>
+                                <th>Training</th>
+                                <th>Overall</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assessment in assessments %}
+                            <tr>
+                                <td class="px-4">{{ assessment.date_recorded|date:"M d, Y" }}</td>
+                                <td>{{ assessment.officer.get_full_name|default:assessment.officer.username }}</td>
+                                <td>{{ assessment.physical_fitness_score }}</td>
+                                <td>{{ assessment.technical_skills_score }}</td>
+                                <td>{{ assessment.training_score }}</td>
+                                <td>
+                                    <span class="fw-bold {% if assessment.readiness_score >= 80 %}text-success{% elif assessment.readiness_score >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                        {{ assessment.readiness_score }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted p-4">No assessments found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
