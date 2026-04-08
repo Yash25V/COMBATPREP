@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Email - CombatPrep{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card glass-card border-0 shadow-lg mt-5">
+            <div class="card-header bg-transparent border-bottom border-secondary text-center py-4">
+                <i class="fa-solid fa-envelope-circle-check fa-3x text-info mb-3"></i>
+                <h3 class="fw-bold mb-0">Email Verification</h3>
+                <p class="text-muted small">Please verify your identity to access the system</p>
+            </div>
+            <div class="card-body p-4 text-center">
+                <p class="text-light mb-4">We've sent a 6-digit verification code to your email address. Please enter it below to confirm your account.</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <input type="text" name="code" class="form-control form-control-lg text-center fw-bold text-accent" placeholder="XXXXXX" maxlength="6" required autocomplete="off" style="letter-spacing: 0.5rem; font-size: 1.5rem;">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-info btn-lg fw-bold">Verify Identity <i class="fa-solid fa-check ms-2"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

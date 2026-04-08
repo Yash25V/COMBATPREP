@@ -41,9 +41,12 @@
                     </li>
                 </ul>
                 
-                {% if user.role == 'OFFICER' %}
-                <div class="mt-4 text-center">
-                    <a href="{% url 'add_assessment' soldier.pk %}" class="btn btn-accent w-100 fw-bold">
+                {% if user.role == 'OFFICER' or user.role == 'ADMIN' or user.is_superuser %}
+                <div class="mt-4 d-grid gap-2">
+                    <a href="{% url 'assign_soldier_details' soldier.pk %}" class="btn btn-outline-info fw-bold">
+                        <i class="fa-solid fa-user-pen me-1"></i> Assign Unit & Details
+                    </a>
+                    <a href="{% url 'add_assessment' soldier.pk %}" class="btn btn-accent fw-bold">
                         <i class="fa-solid fa-plus me-1"></i> Add Assessment
                     </a>
                 </div>

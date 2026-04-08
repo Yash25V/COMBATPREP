@@ -67,6 +67,27 @@ def update_profile(request):
     return render(request, 'records/profile_form.html', {'form': form})
 
 @login_required
+@user_passes_test(is_officer_or_admin)
+def assign_soldier_details(request, pk):
+    from .forms import OfficerAssignmentForm
+    soldier = get_object_or_404(User, pk=pk, role='SOLDIER')
+    try:
+        profile = soldier.profile
+    except SoldierProfile.DoesNotExist:
+        profile = SoldierProfile.objects.create(user=soldier)
+        
+    if request.method == 'POST':
+        form = OfficerAssignmentForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Assignment details for {soldier.username} updated.')
+            return redirect('soldier_detail', pk=pk)
+    else:
+        form = OfficerAssignmentForm(instance=profile)
+        
+    return render(request, 'records/profile_form.html', {'form': form, 'assignment_mode': True, 'soldier': soldier})
+
+@login_required
 @user_passes_test(lambda u: u.is_officer() or u.is_admin())
 def create_training_program(request):
     if request.method == 'POST':
