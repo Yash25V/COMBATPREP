@@ -5,3 +5,4 @@ crispy-bootstrap5==2024.2
 django-crispy-forms==2.1
 gunicorn
 whitenoise
+cryptography
